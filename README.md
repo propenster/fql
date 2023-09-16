@@ -34,20 +34,20 @@ FQL - File Query Language is a versatile tool for querying text files, providing
 ### SELECT
 
 The `SELECT` statement is used to retrieve content (lines) from a file. You specify the file path within double quotes. For example:
-SELECT * FROM "C:\temp\workflow2.json";
+```SELECT * FROM "C:\temp\workflow2.json";```
 
 
 ### SELECT TOP
 
 The `SELECT TOP` statement allows you to select a specific number of lines from the beginning of the file. Replace `15` with the desired number of lines:
-SELECT TOP(15) FROM "C:\temp\workflow2.json";
+```SELECT TOP(15) FROM "C:\temp\workflow2.json";```
 
 
 ### SELECT TAIL
 
 The `SELECT TAIL` statement lets you select a specific number of lines from the end of the file. Replace `15` with the desired number of lines:
 
-SELECT TAIL(15) FROM "C:\temp\workflow2.json";
+```SELECT TAIL(15) FROM "C:\temp\workflow2.json";```
 
 
 ## Searching
@@ -56,14 +56,14 @@ SELECT TAIL(15) FROM "C:\temp\workflow2.json";
 
 Use the `SELECT WHERE LIKE` statement to find lines containing a particular phrase. Replace `"contains this word"` with your desired phrase:
 
-SELECT * FROM "C:\temp\workflow2.json" WHERE LIKE "contains this word";
+```SELECT * FROM "C:\temp\workflow2.json" WHERE LIKE "contains this word";```
 
 
 ### SELECT WHERE NOTLIKE
 
 The `SELECT WHERE NOTLIKE` statement helps you find lines that do not contain a specific phrase. Replace `"contains this word"` with the phrase you want to exclude:
 
-SELECT * FROM "C:\temp\workflow2.json" WHERE NOTLIKE "contains this word";
+```SELECT * FROM "C:\temp\workflow2.json" WHERE NOTLIKE "contains this word";```
 
 
 ## Counting
@@ -72,23 +72,22 @@ SELECT * FROM "C:\temp\workflow2.json" WHERE NOTLIKE "contains this word";
 
 To count the total number of lines in a file, use the `SELECT COUNTL` statement:
 
-SELECT COUNTL * FROM "C:\temp\workflow2.json"; //return count of all Lines in this file...
-SELECT COUNTL TOP(20) FROM "C:\temp\workflow2.json"; // return count of lines from the top 20 lines of the file
-
+```SELECT COUNTL * FROM "C:\temp\workflow2.json"; //return count of all Lines in this file...```
+```SELECT COUNTL TOP(20) FROM "C:\temp\workflow2.json"; // return count of lines from the top 20 lines of the file```
 
 ### SELECT COUNTW
 
 To count the number of words (space-separated) in a file, use the `SELECT COUNTW` statement:
 
-SELECT COUNTW * FROM "C:\temp\workflow2.json"; //return count of words from the entire file
-SELECT COUNTW TOP(20) FROM "C:\temp\workflow2.json"; // return count of words from the top 20 lines of the file
+```SELECT COUNTW * FROM "C:\temp\workflow2.json"; //return count of words from the entire file```
+```SELECT COUNTW TOP(20) FROM "C:\temp\workflow2.json"; // return count of words from the top 20 lines of the file```
 
 
 ### SELECT COUNTC
 
 The `SELECT COUNTC` statement allows you to count the total number of characters in a file:
-SELECT COUNTC * FROM "C:\temp\workflow2.json"; //return count of characters from the entire file
-SELECT COUNTC TOP(20) FROM "C:\temp\workflow2.json"; // return count of characters from the top 20 lines of the file
+```SELECT COUNTC * FROM "C:\temp\workflow2.json"; //return count of characters from the entire file```
+```SELECT COUNTC TOP(20) FROM "C:\temp\workflow2.json"; // return count of characters from the top 20 lines of the file```
 
 
 

@@ -1,0 +1,3 @@
+SELECT * FROM "../cargo.toml"
+SELECT TOP(15) FROM "../cargo.toml"
+SELECT TOP(1000) FROM "~/home/files/myfile.json" > "~/home/files/output.json"

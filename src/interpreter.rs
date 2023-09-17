@@ -75,6 +75,16 @@ fn execute_statement(statement: &Statement) -> Result<(), InterpreterError> {
                                     .cloned()
                                     .collect();
                             }
+                            Some(Token::Regex) => {
+                                let re = Regex::new(&target).unwrap();
+                                // Find all matches in the text
+                                lines = lines
+                                    .iter()
+                                    //.filter(|line| !line.contains(target))
+                                    .filter(|line| re.is_match(line) )
+                                    .cloned()
+                                    .collect();
+                            }
                             _ => unreachable!(),
                         },
 
@@ -88,12 +98,15 @@ fn execute_statement(statement: &Statement) -> Result<(), InterpreterError> {
                     println!("Condition: None");
                 }
 
+                
+
                 if let Some(qty) = quantity {
                     match qty {
                         Token::Star => {
                             if let Some(counter) = counters {
                                 run_counter(counter, &lines);
                             } else {
+                                //how about we vec.join? into some output variable...
                                 for line in lines {
                                     println!("{}", line);
                                 }

@@ -21,25 +21,9 @@ pub enum Statement{
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expression{
     Where{
-        conditional: Option<Token>,
+        conditional: Option<Token>, //conditional one of LIKE or NOTLIKE or REGEX
         target: Identifier,
     },
-    Number(f64),
-    String(String),
-    Bool(bool),
-    Null,
-    Identifier(Identifier),
-    Assign(Box<Expression>, Box<Expression>),
-    //Infix(Box<Expression>, Op, Box<Expression>),
-    //Prefix(Op, Box<Expression>),
-    Call(Box<Expression>, Vec<Expression>),
-    //Struct(Box<Expression>, HashMap<Identifier, Expression>),
-    //Closure(Vec<Parameter>, Vec<Statement>),
-    Get(Box<Expression>, Identifier),
-    Index(Box<Expression>, Option<Box<Expression>>),
-    List(Vec<Expression>),
-
-    //Where(Op, Box<Expression>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

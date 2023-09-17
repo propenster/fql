@@ -27,41 +27,41 @@ fn to_float(lex: &mut Lexer<Token>) -> Option<f64>{
 
 #[derive(Debug, Clone, Logos, PartialEq)]
 pub enum Token{
+    #[token("CREATE", ignore(ascii_case))] //create "~/home/files/new_file.txt"
+    Create,
     #[token("fn")]
     Fn,
-    #[token("SELECT")]
+    #[token("SELECT", ignore(ascii_case))]
     Select,
-    #[regex(r"(?i)COUNTC")]
+    #[token("COUNTC", ignore(ascii_case))]
     CountC, //select countc * from "file.txt"
-    #[regex(r"(?i)COUNTL")]
+    #[token("COUNTL", ignore(ascii_case))]
     CountL,
-    #[regex(r"(?i)COUNTW")]
+    #[token("COUNTW", ignore(ascii_case))]
     CountW,
     #[token("*")]
     Star,
-    #[token("FROM")]
+    #[token("FROM", ignore(ascii_case))]
     From,
 
 
-    #[regex(r"(?i)(Top)\(\d+\)", transform_top_and_tail)]
+    #[regex(r"(?i)(Top)\(\d+\)", transform_top_and_tail, ignore(ascii_case))]
     Top(String),
 
-    #[regex(r"(?i)(Tail)\(\d+\)", transform_top_and_tail)]
+    #[regex(r"(?i)(Tail)\(\d+\)", transform_top_and_tail, ignore(ascii_case))]
     Tail(String),
 
 
-    #[token("WHERE")]
+    #[token("WHERE", ignore(ascii_case))]
     Where,
     #[token(">")]
     Export,
-    #[token("CREATE")] //create "~/home/files/new_file.txt"
-    Create,
+   
 
 
 
-
-    #[regex(r"[a-zA-Z_?]+", to_string)]
-    Identifier(String),
+    // #[regex(r"[a-zA-Z_?]+", to_string)]
+    // Identifier(String),
     #[regex(r"([0-9]+[.])?[0-9]+", to_float)]
     Number(f64),
     #[regex(r##""(?:[^"\\]|\\.)*""##, to_string)]
@@ -101,10 +101,12 @@ pub enum Token{
 
     #[token("!=")]
     NotEquals,
-    #[regex(r"(?i)LIKE")]
+    #[token(r"LIKE", ignore(ascii_case))]
     Like,
-    #[regex(r"(?i)NOTLIKE")]
+    #[token(r"NOTLIKE", ignore(ascii_case))]
     NotLike,
+    #[token("REGEX", ignore(ascii_case))]
+    Regex,
     
     Eof,
 
@@ -118,7 +120,7 @@ pub enum Token{
 impl Into<String> for Token{
     fn into(self) -> String {
         match self{
-            Token::Identifier(s) => s,
+            //Token::Identifier(s) => s,
             Token::Strings(s) => s,
             Token::Top(s) => s,
             Token::Tail(s) => s,
@@ -130,6 +132,77 @@ impl Into<String> for Token{
 #[cfg(test)]
 mod tests{
     use super::*;
+
+    #[test]
+    fn it_can_recognise_select_statements(){
+        let mut lexer = Token::lexer(r##"SELECT * FROM "C:\temp\workflow2.json";"##);
+        assert_eq!(lexer.next(), Some(Token::Select));
+        assert_eq!(lexer.next(), Some(Token::Star));
+        assert_eq!(lexer.next(), Some(Token::From));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Eos));
+    }
+    #[test]
+    fn it_can_recognise_select_with_where_like_condition(){
+        let mut lexer = Token::lexer(r##"SELECT * FROM "C:\temp\workflow2.json" WHERE LIKE "taskid";"##);
+        assert_eq!(lexer.next(), Some(Token::Select));
+        assert_eq!(lexer.next(), Some(Token::Star));
+        assert_eq!(lexer.next(), Some(Token::From));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Where));
+        assert_eq!(lexer.next(), Some(Token::Like));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"taskid".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Eos));
+    }
+    #[test]
+    fn it_can_recognise_case_insensitive(){
+        let mut lexer = Token::lexer(r##"select * fRom "C:\temp\workflow2.json" wHeRe LiKe "taskid";"##);
+        assert_eq!(lexer.next(), Some(Token::Select));
+        assert_eq!(lexer.next(), Some(Token::Star));
+        assert_eq!(lexer.next(), Some(Token::From));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Where));
+        assert_eq!(lexer.next(), Some(Token::Like));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"taskid".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Eos));
+    }
+    #[test]
+    fn it_can_recognise_select_with_where_not_like_condition(){
+        let mut lexer = Token::lexer(r##"SELECT * FROM "C:\temp\workflow2.json" WHERE NOTLIKE "taskid";"##);
+        assert_eq!(lexer.next(), Some(Token::Select));
+        assert_eq!(lexer.next(), Some(Token::Star));
+        assert_eq!(lexer.next(), Some(Token::From));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Where));
+        assert_eq!(lexer.next(), Some(Token::NotLike));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"taskid".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Eos));
+    }
+    #[test]
+    fn it_can_recognise_select_with_count_statements(){
+        let mut lexer = Token::lexer(r##"SELECT COUNTC * FROM "C:\temp\workflow2.json"; SELECT COUNTL * FROM "C:\temp\workflow2.json"; SELECT COUNTW * FROM "C:\temp\workflow2.json"; "##);
+        //COUNTC
+        assert_eq!(lexer.next(), Some(Token::Select));
+        assert_eq!(lexer.next(), Some(Token::CountC));
+        assert_eq!(lexer.next(), Some(Token::Star));
+        assert_eq!(lexer.next(), Some(Token::From));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Eos));
+        //countL
+        assert_eq!(lexer.next(), Some(Token::Select));
+        assert_eq!(lexer.next(), Some(Token::CountL));
+        assert_eq!(lexer.next(), Some(Token::Star));
+        assert_eq!(lexer.next(), Some(Token::From));
+        assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+        assert_eq!(lexer.next(), Some(Token::Eos));
+         //countW
+         assert_eq!(lexer.next(), Some(Token::Select));
+         assert_eq!(lexer.next(), Some(Token::CountW));
+         assert_eq!(lexer.next(), Some(Token::Star));
+         assert_eq!(lexer.next(), Some(Token::From));
+         assert_eq!(lexer.next(), Some(Token::Strings(r"C:\temp\workflow2.json".to_owned())));
+         assert_eq!(lexer.next(), Some(Token::Eos));
+    }
 
 
     #[test]
@@ -147,21 +220,21 @@ mod tests{
 
     }
 
-    #[test]
-    fn it_can_recognise_identifiers(){
-        //let mut lexer = Token::lexer("~/home/files/file.json hello_world C:\\lib\\file.txt");
-        let mut lexer = Token::lexer("hello_world name age identifier salary");
+    // #[test]
+    // fn it_can_recognise_identifiers(){
+    //     //let mut lexer = Token::lexer("~/home/files/file.json hello_world C:\\lib\\file.txt");
+    //     let mut lexer = Token::lexer("hello_world name age identifier salary");
 
-        assert_eq!(lexer.next(), Some(Token::Identifier("hello_world".to_owned())));
-        assert_eq!(lexer.next(), Some(Token::Identifier("name".to_owned())));
-        assert_eq!(lexer.next(), Some(Token::Identifier("age".to_owned())));
-        assert_eq!(lexer.next(), Some(Token::Identifier("identifier".to_owned())));
+    //     assert_eq!(lexer.next(), Some(Token::Identifier("hello_world".to_owned())));
+    //     assert_eq!(lexer.next(), Some(Token::Identifier("name".to_owned())));
+    //     assert_eq!(lexer.next(), Some(Token::Identifier("age".to_owned())));
+    //     assert_eq!(lexer.next(), Some(Token::Identifier("identifier".to_owned())));
 
-        assert_eq!(lexer.next(), Some(Token::Identifier("salary".to_owned())));
+    //     assert_eq!(lexer.next(), Some(Token::Identifier("salary".to_owned())));
 
 
 
-    }
+    // }
 
     #[test]
     fn it_can_recognise_numbers(){
@@ -175,10 +248,10 @@ mod tests{
     #[test]
     fn it_can_recognise_strings(){
         let mut lexer = Token::lexer(r##""testing" "testing with \"" "testing \n""##);
-        assert_eq!(lexer.next(), Some(Token::Strings((r##""testing""##.to_owned()))));
+        assert_eq!(lexer.next(), Some(Token::Strings((r"testing".to_owned()))));
 
-        assert_eq!(lexer.next(), Some(Token::Strings((r##""testing with \"""##.to_owned()))));
-        assert_eq!(lexer.next(), Some(Token::Strings((r##""testing \n""##.to_owned()))));
+        assert_eq!(lexer.next(), Some(Token::Strings((r#"testing with \""#.to_owned()))));
+        assert_eq!(lexer.next(), Some(Token::Strings((r#"testing \n"#.to_owned()))));
     }
 
     #[test]

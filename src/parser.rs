@@ -51,10 +51,16 @@ impl<'a> Parser<'a> {
     fn parse_statement(&mut self) -> Result<Statement, ParseError> {
         match self.current {
             Token::Select => self.parse_select_statement(),
+            //Token::Create => self.parse_create_statement(),
             _ => Err(ParseError::UnexpectedToken(self.current.clone())),
         }
     }
 
+    // fn parse_create_statement(&mut self) -> Result<Statement, ParseError>{
+
+
+    //     Ok(())
+    // }
     fn parse_select_statement(&mut self) -> Result<Statement, ParseError> {
         self.expect_token_and_read(Token::Select)?;
 
@@ -93,6 +99,7 @@ impl<'a> Parser<'a> {
             let conditional = match self.current{
                 Token::Like => Token::Like,
                 Token::NotLike => Token::NotLike,
+                Token::Regex => Token::Regex,
                 _ => unreachable!()
             };
             //move to the next token...
@@ -119,8 +126,8 @@ impl<'a> Parser<'a> {
         })
     }
     fn expect_token(&mut self, token: Token) -> Result<Token, ParseError> {
-        let c = self.current.clone();
-        println!("current Token: {:?}", c);
+        // let c = self.current.clone();
+        // println!("current Token: {:?}", c);
         if self.current_is(token) {
             Ok(self.current.clone())
         } else {
@@ -141,13 +148,6 @@ impl<'a> Parser<'a> {
     fn expect_identifier_and_read(&mut self) -> Result<Token, ParseError> {
         self.expect_token_and_read(Token::Strings("".to_string()))
     }
-    fn expect_top_token_and_read(&mut self) -> Result<Token, ParseError> {
-        self.expect_token_and_read(Token::Top("".to_string()))
-    }
-    fn expect_tail_token_and_read(&mut self) -> Result<Token, ParseError> {
-        self.expect_token_and_read(Token::Tail("".to_string()))
-    }
-
     fn current_is(&self, token: Token) -> bool {
         std::mem::discriminant(&self.current) == std::mem::discriminant(&token)
     }

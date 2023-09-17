@@ -65,6 +65,11 @@ The `SELECT WHERE NOTLIKE` statement helps you find lines that do not contain a 
 
 ```SELECT * FROM "C:\temp\workflow2.json" WHERE NOTLIKE "contains this word";```
 
+### SELECT WHERE REGEX
+
+The `SELECT WHERE REGEX` statement helps you find lines that do match a specific RegularExpression. Replace `"RegexPattern"` with the RegEx you want to compile and use for searching:
+
+```SELECT * FROM "C:\temp\workflow2.json" WHERE REGEX "RegexPattern";```
 
 ## Counting
 
@@ -97,7 +102,7 @@ You can download the FQL compiler binaries from the "bin" folder of this reposit
 
 ## License
 
-FQL is licensed under the [MIT License](https://github.com/propenster/fql/blob/main/MIT-LICENSE).
+FQL is licensed under the [MIT License](https://github.com/propenster/fql/blob/main/MIT-LICENSE) and the [Apache 2.0 License](https://github.com/propenster/fql/blob/main/APACHE2.0-LICENSE).
 
 ## Issues and Pull Requests
 

@@ -97,7 +97,7 @@ You can download the FQL compiler binaries from the "bin" folder of this reposit
 
 ## License
 
-FQL is licensed under the [MIT License](LICENSE).
+FQL is licensed under the [MIT License](https://github.com/propenster/fql/blob/main/MIT-LICENSE).
 
 ## Issues and Pull Requests
 
